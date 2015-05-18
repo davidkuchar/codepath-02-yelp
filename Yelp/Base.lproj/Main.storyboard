@@ -4,7 +4,7 @@
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7701"/>
     </dependencies>
     <scenes>
-        <!--Yelp-->
+        <!--Businesses View Controller-->
         <scene sceneID="5L9-Uz-lNK">
             <objects>
                 <viewController id="2xI-yr-O5N" customClass="BusinessesViewController" customModule="Yelp" customModuleProvider="target" sceneMemberID="viewController">
@@ -123,14 +123,27 @@
                             <constraint firstItem="Hj2-M7-Nqe" firstAttribute="top" secondItem="XhR-oz-92f" secondAttribute="top" id="zw7-HK-8YP"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" title="Yelp" id="UqZ-dv-eIZ">
+                    <navigationItem key="navigationItem" id="UqZ-dv-eIZ">
+                        <nil key="title"/>
                         <barButtonItem key="leftBarButtonItem" title="Filters" id="mir-Qx-SCw">
                             <connections>
                                 <segue destination="dOX-l6-16N" kind="modal" id="aCX-Vy-jRz"/>
                             </connections>
                         </barButtonItem>
+                        <view key="titleView" contentMode="scaleToFill" id="hxP-zc-tZK">
+                            <rect key="frame" x="61" y="6" width="251" height="33"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <subviews>
+                                <searchBar contentMode="redraw" fixedFrame="YES" searchBarStyle="minimal" translatesAutoresizingMaskIntoConstraints="NO" id="nil-xL-pHt">
+                                    <rect key="frame" x="0.0" y="-5" width="251" height="44"/>
+                                    <textInputTraits key="textInputTraits"/>
+                                </searchBar>
+                            </subviews>
+                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                        </view>
                     </navigationItem>
                     <connections>
+                        <outlet property="searchBar" destination="nil-xL-pHt" id="VRD-C1-dYU"/>
                         <outlet property="tableView" destination="Hj2-M7-Nqe" id="nls-XS-ibs"/>
                     </connections>
                 </viewController>

@@ -8,38 +8,40 @@
 
 import UIKit
 
-class BusinessesViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, FiltersViewControllerDelegate {
+class BusinessesViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate, FiltersViewControllerDelegate {
 
     var businesses: [Business]!
+    var searchTerm: String = ""
+    var categories: [String] = []
     
+    @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet weak var tableView: UITableView!
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        
-        tableView.delegate = self
-        tableView.dataSource = self
-        tableView.rowHeight = UITableViewAutomaticDimension
-        tableView.estimatedRowHeight = 120
-
-//        Business.searchWithTerm("Thai", completion: { (businesses: [Business]!, error: NSError!) -> Void in
-//            self.businesses = businesses
+    func loadBusinessData() {
+        Business.searchWithTerm(searchTerm, sort: .BestMatched, categories: categories, deals: nil) { (businesses: [Business]!, error: NSError!) -> Void in
+            self.businesses = businesses
+            self.tableView.reloadData()
 //            
 //            for business in businesses {
 //                println(business.name!)
 //                println(business.address!)
 //            }
-//        })
-        
-        Business.searchWithTerm("Restaurants", sort: .Distance, categories: ["thai", "burgers", "italian"], deals: true) { (businesses: [Business]!, error: NSError!) -> Void in
-            self.businesses = businesses
-            self.tableView.reloadData()
-            
-            for business in businesses {
-                println(business.name!)
-                println(business.address!)
-            }
         }
+    }
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        searchBar.delegate = self
+        
+        tableView.delegate = self
+        tableView.dataSource = self
+        tableView.rowHeight = UITableViewAutomaticDimension
+        tableView.estimatedRowHeight = 120
+        
+        searchBar.text = searchTerm
+        
+        loadBusinessData()
     }
 
     override func didReceiveMemoryWarning() {
@@ -62,6 +64,12 @@ class BusinessesViewController: UIViewController, UITableViewDataSource, UITable
         
         return cell
     }
+    
+    func searchBar(searchBar: UISearchBar, textDidChange searchText: String) {
+        searchTerm = searchText
+        
+        loadBusinessData()
+    }
 
     
     // MARK: - Navigation
@@ -80,11 +88,8 @@ class BusinessesViewController: UIViewController, UITableViewDataSource, UITable
     
     func filtersViewContoller(filtersViewController: FiltersViewController, didUpdateFilters filters: [String : AnyObject]) {
         
-        var categories = filters["categories"] as? [String]
+        categories = filters["categories"] as? [String] ?? []
         
-        Business.searchWithTerm("Restaurants", sort: nil, categories: categories, deals: nil) { (businesses: [Business]!, error: NSError!) -> Void in
-            self.businesses = businesses
-            self.tableView.reloadData()
-        }
+        loadBusinessData()
     }
 }
