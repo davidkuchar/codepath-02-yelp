@@ -21,6 +21,12 @@ class BusinessesViewController: UIViewController, UITableViewDataSource, UITable
     @IBOutlet weak var tableView: UITableView!
     
     func loadBusinessData() {
+        
+        println("sortBy: \(sortBy?.rawValue)")
+        println("distance: \(distance)")
+        println("deals: \(deals)")
+        println("categories: \(categories)")
+        
         Business.searchWithTerm(searchTerm, sort: sortBy, categories: categories, deals: deals) { (businesses: [Business]!, error: NSError!) -> Void in
             self.businesses = businesses
             self.tableView.reloadData()
@@ -37,7 +43,6 @@ class BusinessesViewController: UIViewController, UITableViewDataSource, UITable
         tableView.dataSource = self
         tableView.rowHeight = UITableViewAutomaticDimension
         tableView.estimatedRowHeight = 120
-        
         
         loadBusinessData()
     }
@@ -71,11 +76,10 @@ class BusinessesViewController: UIViewController, UITableViewDataSource, UITable
     }
     
     func filtersViewContoller(filtersViewController: FiltersViewController, didUpdateFilters filters: [String : AnyObject]) {
-        
-        sortBy = filters["sort"] as? YelpSortMode
+
+        sortBy = YelpSortMode(rawValue: filters["sort"] as! Int)
         distance = filters["distance"] as? String ?? "Auto"
         deals = filters["deals"] as? Bool ?? false
-        
         categories = filters["categories"] as? [String] ?? []
         
         loadBusinessData()

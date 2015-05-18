@@ -52,7 +52,7 @@ class FiltersViewController: UIViewController, UITableViewDataSource, UITableVie
         var filters = [String:AnyObject]()
         
         filters["deals"] = deals
-        filters["sort"] = sortBy as? AnyObject
+        filters["sort"] = sortBy?.rawValue
         filters["distance"] = distance
         
         let selectedCategories = categories.getSelected()
