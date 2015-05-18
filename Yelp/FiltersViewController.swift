@@ -8,6 +8,10 @@
 
 import UIKit
 
+enum FilterType: Int {
+    case Deals = 0, SortBy, Distance, Categories
+}
+
 @objc protocol FiltersViewControllerDelegate {
     optional func filtersViewContoller(filtersViewController: FiltersViewController, didUpdateFilters filters: [String:AnyObject])
 }
@@ -64,14 +68,14 @@ class FiltersViewController: UIViewController, UITableViewDataSource, UITableVie
     }
     
     func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        switch section {
-        case 0:
+        switch FilterType(rawValue: section) {
+        case .Some(.Deals):
             return "Deals"
-        case 1:
+        case .Some(.SortBy):
             return "Sort By"
-        case 2:
+        case .Some(.Distance):
             return "Distance"
-        case 3:
+        case .Some(.Categories):
             return "Categories"
         default:
             return ""
@@ -79,14 +83,14 @@ class FiltersViewController: UIViewController, UITableViewDataSource, UITableVie
     }
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        switch section {
-        case 0:
+        switch FilterType(rawValue: section) {
+        case .Some(.Deals):
             return 1
-        case 1:
-            return 3
-        case 2:
-            return 5
-        case 3:
+        case .Some(.SortBy):
+            return sortByOptions.count
+        case .Some(.Distance):
+            return distanceOptions.count
+        case .Some(.Categories):
             return categories.list.count
         default:
             return 0
@@ -95,8 +99,8 @@ class FiltersViewController: UIViewController, UITableViewDataSource, UITableVie
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         
-        switch indexPath.section {
-        case 0:
+        switch FilterType(rawValue: indexPath.section) {
+        case .Some(.Deals):
             let cell = tableView.dequeueReusableCellWithIdentifier("SwitchCell", forIndexPath: indexPath) as! SwitchCell
             
             cell.switchLabel.text = "Offering a Deal"
@@ -105,27 +109,31 @@ class FiltersViewController: UIViewController, UITableViewDataSource, UITableVie
             cell.onSwitch.on = deals
             
             return cell
-        case 1:
+        case .Some(.SortBy):
             let cell = tableView.dequeueReusableCellWithIdentifier("SelectCell", forIndexPath: indexPath) as! SelectCell
            
             cell.selectionLabel.text = sortByOptions[indexPath.row]
             
             if sortBy?.hashValue == indexPath.row {
                 cell.accessoryType = .Checkmark
+            } else {
+                cell.accessoryType = .None
             }
             
             return cell
-        case 2:
+        case .Some(.Distance):
             let cell = tableView.dequeueReusableCellWithIdentifier("SelectCell", forIndexPath: indexPath) as! SelectCell
             
             cell.selectionLabel.text = distanceOptions[indexPath.row]
             
             if distance == distanceOptions[indexPath.row] {
                 cell.accessoryType = .Checkmark
+            } else {
+                cell.accessoryType = .None
             }
             
             return cell
-        case 3:
+        case .Some(.Categories):
             let cell = tableView.dequeueReusableCellWithIdentifier("SwitchCell", forIndexPath: indexPath) as! SwitchCell
 
             cell.switchLabel.text = categories.list[indexPath.row]["name"]
@@ -140,15 +148,26 @@ class FiltersViewController: UIViewController, UITableViewDataSource, UITableVie
         }
     }
     
+    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        switch FilterType(rawValue: indexPath.section) {
+        case .Some(.SortBy):
+            sortBy = YelpSortMode(rawValue: indexPath.row)
+            tableView.reloadData()
+        case .Some(.Distance):
+            distance = distanceOptions[indexPath.row]
+            tableView.reloadData()
+        default:
+            break
+        }
+    }
+    
     func switchCell(switchCell: SwitchCell, didChangeValue value: Bool) {
         let indexPath = tableView.indexPathForCell(switchCell)!
         
-        switch indexPath.section {
-        case 0:
+        switch FilterType(rawValue: indexPath.section) {
+        case .Some(.Deals):
             deals = value
-//        case 1:
-//        case 2:
-        case 3:
+        case .Some(.Categories):
             categories.setSelected(indexPath.row, value: value)
         default:
             return
