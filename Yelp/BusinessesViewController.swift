@@ -12,13 +12,16 @@ class BusinessesViewController: UIViewController, UITableViewDataSource, UITable
 
     var businesses: [Business]!
     var searchTerm: String = ""
+    var sortBy:YelpSortMode? = .BestMatched
+    var distance: String = "Auto"
+    var deals = false
     var categories: [String] = []
     
     @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet weak var tableView: UITableView!
     
     func loadBusinessData() {
-        Business.searchWithTerm(searchTerm, sort: .BestMatched, categories: categories, deals: nil) { (businesses: [Business]!, error: NSError!) -> Void in
+        Business.searchWithTerm(searchTerm, sort: sortBy, categories: categories, deals: deals) { (businesses: [Business]!, error: NSError!) -> Void in
             self.businesses = businesses
             self.tableView.reloadData()
         }
@@ -68,6 +71,10 @@ class BusinessesViewController: UIViewController, UITableViewDataSource, UITable
     }
     
     func filtersViewContoller(filtersViewController: FiltersViewController, didUpdateFilters filters: [String : AnyObject]) {
+        
+        sortBy = filters["sort"] as? YelpSortMode
+        distance = filters["distance"] as? String ?? "Auto"
+        deals = filters["deals"] as? Bool ?? false
         
         categories = filters["categories"] as? [String] ?? []
         
