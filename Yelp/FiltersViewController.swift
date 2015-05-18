@@ -17,13 +17,13 @@ class FiltersViewController: UIViewController, UITableViewDataSource, UITableVie
     @IBOutlet weak var tableView: UITableView!
     weak var delegate: FiltersViewControllerDelegate?
     
-    let distanceOptions = ["Auto", "0.3 miles", "1 mile", "5 miles", "20 miles"]
-    
-    var sortBy:YelpSortMode? = .BestMatched
-    var distance: String = "Auto"
     var deals = false
+    let sortByOptions = ["Best Match", "Distance", "Highest Rated"]
+    var sortBy:YelpSortMode? = .BestMatched
+    let distanceOptions = ["Auto", "0.3 miles", "1 mile", "5 miles", "20 miles"]
+    var distance: String = "Auto"
     var categories = Categories()
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -47,11 +47,9 @@ class FiltersViewController: UIViewController, UITableViewDataSource, UITableVie
         
         var filters = [String:AnyObject]()
         
-        filters["sort"] = sortBy as? AnyObject
-        
-        filters["distance"] = distance
-        
         filters["deals"] = deals
+        filters["sort"] = sortBy as? AnyObject
+        filters["distance"] = distance
         
         let selectedCategories = categories.getSelected()
         if selectedCategories.count > 0 {
@@ -68,11 +66,11 @@ class FiltersViewController: UIViewController, UITableViewDataSource, UITableVie
     func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         switch section {
         case 0:
-            return "Sort By"
-        case 1:
-            return "Distance"
-        case 2:
             return "Deals"
+        case 1:
+            return "Sort By"
+        case 2:
+            return "Distance"
         case 3:
             return "Categories"
         default:
@@ -83,11 +81,11 @@ class FiltersViewController: UIViewController, UITableViewDataSource, UITableVie
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         switch section {
         case 0:
-            return 3
-        case 1:
-            return 5
-        case 2:
             return 1
+        case 1:
+            return 3
+        case 2:
+            return 5
         case 3:
             return categories.list.count
         default:
@@ -100,20 +98,32 @@ class FiltersViewController: UIViewController, UITableViewDataSource, UITableVie
         switch indexPath.section {
         case 0:
             let cell = tableView.dequeueReusableCellWithIdentifier("SwitchCell", forIndexPath: indexPath) as! SwitchCell
-
-            return cell
-        case 1:
-            let cell = tableView.dequeueReusableCellWithIdentifier("SwitchCell", forIndexPath: indexPath) as! SwitchCell
-
-            return cell
-        case 2:
-            let cell = tableView.dequeueReusableCellWithIdentifier("SwitchCell", forIndexPath: indexPath) as! SwitchCell
             
             cell.switchLabel.text = "Offering a Deal"
             cell.delegate = self
             
             cell.onSwitch.on = deals
-
+            
+            return cell
+        case 1:
+            let cell = tableView.dequeueReusableCellWithIdentifier("SelectCell", forIndexPath: indexPath) as! SelectCell
+           
+            cell.selectionLabel.text = sortByOptions[indexPath.row]
+            
+            if sortBy?.hashValue == indexPath.row {
+                cell.accessoryType = .Checkmark
+            }
+            
+            return cell
+        case 2:
+            let cell = tableView.dequeueReusableCellWithIdentifier("SelectCell", forIndexPath: indexPath) as! SelectCell
+            
+            cell.selectionLabel.text = distanceOptions[indexPath.row]
+            
+            if distance == distanceOptions[indexPath.row] {
+                cell.accessoryType = .Checkmark
+            }
+            
             return cell
         case 3:
             let cell = tableView.dequeueReusableCellWithIdentifier("SwitchCell", forIndexPath: indexPath) as! SwitchCell
@@ -134,10 +144,10 @@ class FiltersViewController: UIViewController, UITableViewDataSource, UITableVie
         let indexPath = tableView.indexPathForCell(switchCell)!
         
         switch indexPath.section {
-//        case 0:
-//        case 1:
-        case 2:
+        case 0:
             deals = value
+//        case 1:
+//        case 2:
         case 3:
             categories.setSelected(indexPath.row, value: value)
         default:
