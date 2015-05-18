@@ -21,11 +21,6 @@ class BusinessesViewController: UIViewController, UITableViewDataSource, UITable
         Business.searchWithTerm(searchTerm, sort: .BestMatched, categories: categories, deals: nil) { (businesses: [Business]!, error: NSError!) -> Void in
             self.businesses = businesses
             self.tableView.reloadData()
-//            
-//            for business in businesses {
-//                println(business.name!)
-//                println(business.address!)
-//            }
         }
     }
     
@@ -33,13 +28,13 @@ class BusinessesViewController: UIViewController, UITableViewDataSource, UITable
         super.viewDidLoad()
         
         searchBar.delegate = self
+        searchBar.text = searchTerm
         
         tableView.delegate = self
         tableView.dataSource = self
         tableView.rowHeight = UITableViewAutomaticDimension
         tableView.estimatedRowHeight = 120
         
-        searchBar.text = searchTerm
         
         loadBusinessData()
     }
@@ -66,11 +61,18 @@ class BusinessesViewController: UIViewController, UITableViewDataSource, UITable
     }
     
     func searchBar(searchBar: UISearchBar, textDidChange searchText: String) {
+        
         searchTerm = searchText
         
         loadBusinessData()
     }
-
+    
+    func filtersViewContoller(filtersViewController: FiltersViewController, didUpdateFilters filters: [String : AnyObject]) {
+        
+        categories = filters["categories"] as? [String] ?? []
+        
+        loadBusinessData()
+    }
     
     // MARK: - Navigation
 
@@ -84,12 +86,5 @@ class BusinessesViewController: UIViewController, UITableViewDataSource, UITable
         
         filtersViewContoller.delegate = self
         
-    }
-    
-    func filtersViewContoller(filtersViewController: FiltersViewController, didUpdateFilters filters: [String : AnyObject]) {
-        
-        categories = filters["categories"] as? [String] ?? []
-        
-        loadBusinessData()
     }
 }
